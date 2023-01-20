@@ -44,18 +44,19 @@ tbody tr {
     background-color: var(--color-tan);
 }
 
-.edit-button, .delete-button {
+.edit-button, .delete-button, .add-button, .cancel-button {
     height: 2.5rem;
     width: 3rem;
     border-radius: 5px;
     border: none;
+    margin: 2px;
 }
 
-.edit-button {
+.edit-button, .add-button {
     background-color: var(--color-blue);
 }
 
-.delete-button {
+.delete-button, .cancel-button {
     background-color: var(--color-Vermillion-red);
 }
 
