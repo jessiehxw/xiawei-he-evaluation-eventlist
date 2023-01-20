@@ -1,0 +1,64 @@
+:root{
+    --color-blue:#008cba;
+    --color-tan:#e6e2d3;
+    --color-Traffic:#f0f0f0;
+    --color-Yellow-green:#4caf50;
+    --color-Vermillion-red:#c94c4c;
+    --color-grey-dark:#757575;
+}
+
+.event-list-app {
+    text-align: center;
+}
+
+.event-list-app__btn-add {
+    margin-top: 12px;
+    padding: 12px;
+    font-size: 18px;
+    border-radius: 8px;
+    border: none;
+    color: white;
+    background-color: var(--color-blue);
+}
+
+.event-list-app__event-table {
+    text-align: center;
+    margin: 16px auto 16px auto;
+    border: 5px solid;
+    border-color: var(--color-tan);
+    border-radius: 8px;
+    padding: 10px 1rem 10px 1rem;
+    border-spacing: 0rem 1rem;
+}
+
+th {
+    font-size: 25px;
+}
+
+td {
+    font-size: 18px;
+    padding: 1rem 4rem 1rem 4rem;
+}
+
+tbody tr {
+    background-color: var(--color-tan);
+}
+
+.edit-button, .delete-button {
+    height: 2.5rem;
+    width: 3rem;
+    border-radius: 5px;
+    border: none;
+}
+
+.edit-button {
+    background-color: var(--color-blue);
+}
+
+.delete-button {
+    background-color: var(--color-Vermillion-red);
+}
+
+svg {
+    width: 70%;
+}
