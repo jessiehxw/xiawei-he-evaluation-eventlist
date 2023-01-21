@@ -29,7 +29,7 @@ const API = (() => { // all cap for const value
 })()
     
 /* test */
-// API.removeEvent(1)
+// API.removeEvent(12)
 
 // API.postEvent({title:"cook"}).then(data=>{
 //     console.log(data)
@@ -49,8 +49,9 @@ class EventModel {
     }
 
     fetchEvents() {
-        API.getEvents().then((data) => {
+        return API.getEvents().then((data) => {
             this.#events = data;
+            return data;
         })
     }
 
@@ -59,46 +60,35 @@ class EventModel {
     }
 
     addEvent(newEvent) {
-        API.postEvent(newEvent).then(data=> {
+        return API.postEvent(newEvent).then(data=> {
             this.#events.push(data);
+            return data;
         })
     }
 
     removeEvent(id) {
-        API.removeEvent(id).then(data=>{
+        return API.removeEvent(id).then(data=>{
             const temp = this.#events.filter((event) => event.id !== id); 
             this.#events = temp; 
+            return data;
         })
     }
 }
 
-const events = [
-    {
-      "eventName": "Music Festival",
-      "startDate": "2023-01-20",
-      "endDate": "2023-01-21",
-      "id": 1
-    },
-    {
-      "eventName": "Food Festival",
-      "startDate": "2023-02-01",
-      "endDate": "2023-02-02",
-      "id": 2
-    }
-]
-
 class EventView {
+
     constructor() {
         this.addBtn = document.querySelector(".event-list-app__btn-add");
         this.eventList = document.querySelector(".event-table_body");
-        this.eventNameInput = document.querySelector(".event-name-input");
     }
     
     renderEvents(events) {
+        this.eventList.textContent = "";
         events.forEach(this.renderEvent.bind(this));
     }
 
     renderEvent(event) {
+
         const eventElem = document.createElement("tr");
         eventElem.classList.add("event");
 
@@ -165,19 +155,19 @@ class EventView {
         addEventElem.classList.add("add-event");
 
         const eventNameElem = document.createElement("td");
-        eventNameElem.classList.add("event-name-input");
         const inputNameElem = document.createElement("input");
+        inputNameElem.classList.add("event-name-input");
         eventNameElem.appendChild(inputNameElem);
 
         const startDateElem = document.createElement("td");
-        startDateElem.classList.add("event-start-input");
         const inputStartElem = document.createElement("input");
+        inputStartElem.classList.add("event-start-input");
         inputStartElem.setAttribute("type", "date");
         startDateElem.appendChild(inputStartElem);
 
         const endDateElem = document.createElement("td");
-        endDateElem.classList.add("event-end-input");
         const inputEndElem = document.createElement("input");
+        inputEndElem.classList.add("event-end-input");
         inputEndElem.setAttribute("type", "date");
         endDateElem.appendChild(inputEndElem);
 
@@ -229,6 +219,22 @@ class EventView {
 
         this.eventList.append(addEventElem);
     }
+
+    getNameInput() {
+        return document.querySelector(".event-name-input");
+    }
+
+    getStartInput() {
+        return document.querySelector(".event-start-input");
+    }
+
+    getEndInput() {
+        return document.querySelector(".event-end-input");
+    }
+
+    getSubmitBtn() {
+        return document.querySelector(".add-button");
+    }
 }
 
 class EventController {
@@ -236,6 +242,14 @@ class EventController {
         this.view = view;
         this.model = model;
         this.setUpEvents();
+        this.initialize();
+    }
+
+    initialize() {
+        this.model.fetchEvents().then((data)=>{
+            this.view.renderEvents(this.model.getEvents());
+        })
+        this.setUpEvents()
     }
 
     setUpEvents() {
@@ -244,12 +258,26 @@ class EventController {
 
     handleAdd() {
         this.view.addBtn.addEventListener("click", e=>{
-            console.log("haha");
             e.preventDefault();
             this.view.renderAddEvent();
+            this.processAdd();
+        })
+    }
 
-            const input = this.view.eventNameInput;
-            console.log(input)
+    processAdd() {
+        this.view.getSubmitBtn().addEventListener("click",e=>{
+            e.preventDefault();
+            const eventNameInput = this.view.getNameInput().value;
+            const eventStartInput = this.view.getStartInput().value;
+            const eventEndInput = this.view.getEndInput().value;
+            
+            this.model.addEvent({
+                eventName: eventNameInput,
+                startDate: eventStartInput,
+                endDate: eventEndInput
+            }).then(data=>{
+                this.view.renderEvents(this.model.getEvents())
+            })
         })
     }
 }
@@ -257,16 +285,3 @@ class EventController {
 const eventModel = new EventModel();
 const eventView = new EventView();
 const eventController = new EventController(eventView, eventModel);
-
-eventView.renderEvents(events);
-
-// eventModel.addEvent({
-//     title: "cook"
-// })
-
-// eventModel.removeEvent(1);
-// console.log(eventModel.getEvents())
-
-// for (let i = 0; i<12; i++) {
-//     API.removeEvent(i);
-// }
