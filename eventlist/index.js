@@ -241,7 +241,6 @@ class EventController {
     constructor(view, model) {
         this.view = view;
         this.model = model;
-        this.setUpEvents();
         this.initialize();
     }
 
