@@ -19,6 +19,7 @@
     border: none;
     color: white;
     background-color: var(--color-blue);
+    cursor: pointer;
 }
 
 .event-list-app__event-table {
@@ -51,6 +52,7 @@ tbody tr {
     border-radius: 5px;
     border: none;
     margin: 2px;
+    cursor: pointer;
 }
 
 .edit-button, .add-button {

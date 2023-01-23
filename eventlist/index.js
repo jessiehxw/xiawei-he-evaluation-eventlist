@@ -68,7 +68,7 @@ class EventModel {
 
     removeEvent(id) {
         return API.removeEvent(id).then(data=>{
-            const temp = this.#events.filter((event) => event.id !== id); 
+            const temp = this.#events.filter((event) => event.id !== +id); 
             this.#events = temp; 
             return data;
         })
@@ -91,6 +91,7 @@ class EventView {
 
         const eventElem = document.createElement("tr");
         eventElem.classList.add("event");
+        eventElem.setAttribute("id", event.id);
 
         const eventNameElem = document.createElement("td");
         eventNameElem.classList.add("event_name");
@@ -109,6 +110,7 @@ class EventView {
 
         const editButton = document.createElement("button");
         editButton.classList.add("edit-button");
+        editButton.classList.add(`edit-button-${event.id}`);
 
         const editSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         editSvg.setAttribute("focusable", "false");
@@ -127,6 +129,7 @@ class EventView {
         deleteButton.classList.add("delete-button");
 
         const deleteSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        deleteSvg.classList.add("delete-svg");
         deleteSvg.setAttribute("focusable", "false");
         deleteSvg.setAttribute("aria-hidden", "true");
         deleteSvg.setAttribute("viewBox", "0 0 24 24");
@@ -135,6 +138,7 @@ class EventView {
         deleteButton.appendChild(deleteSvg);
 
         const deletePath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+        deletePath.classList.add("delete-path");
         deletePath.setAttribute("fill", "#f0f0f0");
         deletePath.setAttribute("d", "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z");
         deleteSvg.appendChild(deletePath);
@@ -194,7 +198,7 @@ class EventView {
         addSvg.appendChild(addPath);
 
         const cancelButton = document.createElement("button");
-        cancelButton.classList.add("delete-button");
+        cancelButton.classList.add("cancel-button");
 
         const cancelSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         cancelSvg.setAttribute("focusable", "false");
@@ -235,6 +239,15 @@ class EventView {
     getSubmitBtn() {
         return document.querySelector(".add-button");
     }
+
+    getCancelBtn() {
+        return document.querySelector(".cancel-button");
+    }
+
+    closeAddRow() {
+        const addRow = document.querySelector(".add-event");
+        addRow.remove();
+    }
 }
 
 class EventController {
@@ -253,6 +266,28 @@ class EventController {
 
     setUpEvents() {
         this.handleAdd();
+        this.setUpRemoveEvent();
+    }
+
+    setUpRemoveEvent() {
+        this.view.eventList.addEventListener("click", e=>{
+            if (e.target.classList.contains("delete-button")) {
+                const id = e.target.parentNode.parentNode.getAttribute("id");
+                this.model.removeEvent(id).then((data)=>{
+                    this.view.renderEvents(this.model.getEvents());
+                });
+            } else if (e.target.classList.contains("delete-svg")) {
+                const id = e.target.parentNode.parentNode.parentNode.getAttribute("id");
+                this.model.removeEvent(id).then((data)=>{
+                    this.view.renderEvents(this.model.getEvents());
+                });
+            } else if (e.target.classList.contains("delete-path")) {
+                const id = e.target.parentNode.parentNode.parentNode.parentNode.getAttribute("id");
+                this.model.removeEvent(id).then((data)=>{
+                    this.view.renderEvents(this.model.getEvents());
+                });
+            }
+        })
     }
 
     handleAdd() {
@@ -269,14 +304,26 @@ class EventController {
             const eventNameInput = this.view.getNameInput().value;
             const eventStartInput = this.view.getStartInput().value;
             const eventEndInput = this.view.getEndInput().value;
-            
-            this.model.addEvent({
-                eventName: eventNameInput,
-                startDate: eventStartInput,
-                endDate: eventEndInput
-            }).then(data=>{
-                this.view.renderEvents(this.model.getEvents())
-            })
+
+            if (eventNameInput.length !== 0 
+                && eventStartInput.length !== 0 
+                && eventEndInput.length !== 0) {
+                    this.model.addEvent({
+                        eventName: eventNameInput,
+                        startDate: eventStartInput,
+                        endDate: eventEndInput
+                    }).then(data=>{
+                        this.view.renderEvents(this.model.getEvents())
+                    })
+                }
+            else {
+                alert("Input not valid!");
+            }
+        });
+
+        this.view.getCancelBtn().addEventListener("click", e=>{
+            e.preventDefault();
+            this.view.closeAddRow();
         })
     }
 }
